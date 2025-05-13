@@ -44,6 +44,15 @@ async function run() {
       const result = await usersCollection.deleteOne({ _id: query });
       res.send(result);
     });
+    //update data to db collection- U
+    app.put("/users/:id", async (req, res) => {
+      const user = req.body;
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
+      const Updatedoc = { $set: { name: user.name, email: user.email } };
+      const result = await usersCollection.updateOne(filter, Updatedoc);
+      res.send(result);
+    });
     await client.db("admin").command({ ping: 1 });
     console.log(
       "Pinged your deployment. You successfully connected to MongoDB!"

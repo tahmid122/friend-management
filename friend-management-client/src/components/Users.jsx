@@ -1,8 +1,10 @@
 import React, { use, useState } from "react";
+import { Link } from "react-router";
 
 const Users = ({ usersPromise }) => {
   const loadedData = use(usersPromise);
   const [users, setUsers] = useState(loadedData);
+  const [id, setId] = useState("");
   console.log(users);
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -10,7 +12,6 @@ const Users = ({ usersPromise }) => {
     const name = form.name.value;
     const email = form.email.value;
     const newUser = { name, email };
-    console.log(newUser);
     fetch("http://localhost:3000/users", {
       method: "POST",
       headers: {
@@ -41,6 +42,23 @@ const Users = ({ usersPromise }) => {
         }
       });
   };
+  const handleUpdate = (e) => {
+    e.preventDefault();
+    const form = e.target;
+    const id = form.id.value;
+    const name = form.name.value;
+    const email = form.email.value;
+    const newUser = { name, email };
+    fetch(`http://localhost:3000/users/${id}`, {
+      method: "PUT",
+      headers: {
+        "content-type": "application/json",
+      },
+      body: JSON.stringify(newUser),
+    })
+      .then((res) => res.json())
+      .then((data) => console.log(data));
+  };
   return (
     <div>
       <h2>Add User</h2>
@@ -57,9 +75,19 @@ const Users = ({ usersPromise }) => {
           <p key={user._id}>
             {user.name}: {user.email}
             <button onClick={() => handleDelete(user._id)}>X</button>
+            <button onClick={() => setId(user._id)}>Details</button>
           </p>
         ))}
       </div>
+      <form onSubmit={handleUpdate}>
+        <input type="text" name="id" placeholder="Id" defaultValue={id} />
+        <br />
+        <input type="text" name="name" placeholder="Name" />
+        <br />
+        <input type="email" name="email" placeholder="Email" />
+        <br />
+        <button type="submit">Update User</button>
+      </form>
     </div>
   );
 };
